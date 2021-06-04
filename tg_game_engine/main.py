@@ -3,7 +3,6 @@ import telebot
 from os import environ
 from flask import Flask, request
 
-DATABASE_URL = environ.get('DATABASE_URL')
 APP_URL = environ.get('APP_URL')
 BOT_TOKEN = environ.get('BOT_TOKEN')
 REDIS = environ.get('REDIS')
@@ -18,7 +17,7 @@ from .handlers import message
 def getMessage():
     bot.process_new_updates([
             telebot.types.Update.de_json(
-                request.stream.read().decode("utf-8")
+                request.stream.read().decode('utf-8')
             )
     ])
     return 'ok', 200
@@ -32,4 +31,3 @@ def test():
 url = APP_URL + BOT_TOKEN
 bot.remove_webhook()
 bot.set_webhook(url)
-app.run(host="0.0.0.0", port=int(environ.get('PORT', 5000)))
