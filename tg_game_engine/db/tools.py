@@ -2,7 +2,7 @@ from tg_game_engine.db.main import SessionLocal
 from tg_game_engine.db import models
 
 
-def get_user(tg_id: int):
+def get_user(tg_id: int) -> models.TelegramUser:
     db = SessionLocal()
     tg_user = db.query(models.TelegramUser).filter_by(telegram_id=tg_id).first()
     if not tg_user:

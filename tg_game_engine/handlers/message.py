@@ -4,8 +4,8 @@ from tg_game_engine.db import tools
 
 @bot.message_handler(commands=['start'])
 def start_message(msg):
-    tools.get_user(msg.from_user.id)
-    bot.send_message(msg.chat.id, 'hi')
+    user = tools.get_user(msg.from_user.id)
+    bot.send_message(msg.chat.id, user.telegram_id)
 
 
 @bot.message_handler(
