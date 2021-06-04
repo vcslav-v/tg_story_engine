@@ -32,3 +32,4 @@ def test():
 url = APP_URL + BOT_TOKEN
 bot.remove_webhook()
 bot.set_webhook(url)
+app.run(host="0.0.0.0", port=int(environ.get('PORT', 5000)))
