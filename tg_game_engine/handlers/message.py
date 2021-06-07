@@ -1,14 +1,14 @@
 from tg_game_engine.main import bot
 from tg_game_engine.db import tools
-from time import sleep
+from tg_game_engine.db.main import SessionLocal
 
 
 @bot.message_handler(commands=['start'])
 def start_message(msg):
-    sleep(10)
-    print('wakeup')
-    user = tools.get_user(msg.from_user.id)
+    db = SessionLocal()
+    user = tools.send_next_step(db, msg.from_user.id)
     bot.send_message(msg.chat.id, user.telegram_id)
+    db.close()
 
 
 @bot.message_handler(

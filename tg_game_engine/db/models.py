@@ -13,3 +13,6 @@ class TelegramUser(Base):
     id = Column(Integer, primary_key=True)
 
     telegram_id = Column(Integer, unique=True)
+    chapter_id = Column(Integer)
+    message_id = Column(Integer)
+    num_referals = Column(Integer, default=0)

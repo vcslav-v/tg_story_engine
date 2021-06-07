@@ -15,13 +15,11 @@ from .handlers import message
 
 @app.route('/' + BOT_TOKEN, methods=['POST'])
 def getMessage():
-    print('in')
     bot.process_new_updates([
             telebot.types.Update.de_json(
                 request.stream.read().decode('utf-8')
             )
     ])
-    print('out')
     return 'ok', 200
 
 
