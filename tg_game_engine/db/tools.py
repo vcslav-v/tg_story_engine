@@ -2,6 +2,7 @@ from tg_game_engine.db import models
 from sqlalchemy.orm import Session
 from tg_game_engine import schemas
 import requests
+from loguru import logger
 from os import environ
 from tg_game_engine.main import bot
 from telebot import types
@@ -28,7 +29,9 @@ def get_message(
     if not next_msg_id:
         next_msg_id = user.message_id
     req_url = f'{DB_API_URL}/msg/{user.message_id}' if next_msg_id else DB_API_URL
+    logger.debug(req_url)
     resp = requests.get(req_url)
+    logger.debug(resp.text)
     return schemas.Message.parse_raw(resp.text)
 
 
