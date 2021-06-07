@@ -8,7 +8,10 @@ from tg_game_engine.mem import UserContext
 def start_message(msg):
     db = SessionLocal()
     user_context = UserContext(msg.from_user.id)
-    tools.send_next_step(db, user_context)
+    try:
+        tools.send_next_step(db, user_context)
+    except Exception as e:
+        print(e)
     db.close()
 
 
