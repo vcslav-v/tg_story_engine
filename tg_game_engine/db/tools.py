@@ -49,10 +49,17 @@ def send(message: schemas.Message, user: models.TelegramUser):
 
 
 def send_next_step(db: Session, user_context: UserContext, user_msg: str = None):
+    print('start')
     user = get_user(db, user_context.tg_id)
+    print('user')
     message = get_message(user, user_context, user_msg)
+    print('message')
     send(message, user)
+    print('send')
     user_context.set_wait_answers(message)
+    print('set_wait_answers')
     user.message_id = message.id
+    print('message_id')
     user.chapter_id = message.chapter_id
+    print('chapter_id')
     db.commit()
