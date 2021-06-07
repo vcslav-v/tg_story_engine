@@ -6,7 +6,6 @@ from os import environ
 from tg_game_engine.main import bot
 from telebot import types
 from tg_game_engine.mem import UserContext
-from loguru import logger
 
 DB_API_URL = environ.get('DB_API_URL') or ''
 
@@ -25,7 +24,6 @@ def get_message(
     user_context: UserContext,
     user_msg: str = None,
 ) -> schemas.Message:
-    logger.debug(f'get_message({user.message_id}, {user_msg})')
     next_msg_id = user_context.get_next_msg_id(user_msg)
     if not next_msg_id:
         next_msg_id = user.message_id
@@ -35,7 +33,6 @@ def get_message(
 
 
 def make_buttons(message: schemas.Message) -> types.ReplyKeyboardMarkup:
-    logger.debug(f'make_buttons({message})')
     if not message.buttons:
         return
     keyboard = types.ReplyKeyboardMarkup(
@@ -47,13 +44,11 @@ def make_buttons(message: schemas.Message) -> types.ReplyKeyboardMarkup:
 
 
 def send(message: schemas.Message, user: models.TelegramUser):
-    logger.debug(f'send({message.text}, {user.telegram_id})')
     buttons = make_buttons(message)
     bot.send_message(user.telegram_id, message.text, reply_markup=buttons)
 
 
 def send_next_step(db: Session, user_context: UserContext, user_msg: str = None):
-    logger.debug(f'send_next_step({user_context.tg_id}, {user_msg})')
     user = get_user(db, user_context.tg_id)
     message = get_message(user, user_context, user_msg)
     send(message, user)

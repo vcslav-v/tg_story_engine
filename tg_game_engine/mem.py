@@ -18,7 +18,6 @@ r = redis.Redis(
 
 class UserContext:
     def __init__(self, tg_id: int):
-        logger.debug(f'Make UserContext({tg_id})')
         self.tg_id = tg_id
         self._wait_answer = f'{tg_id}:wait_answer'
 
@@ -31,9 +30,6 @@ class UserContext:
             r.set(f'{self._wait_answer}:{btn.text}', btn.next_message_id)
 
     def get_next_msg_id(self, user_msg: str = None):
-        try:
-            msg_id = int(r.get(f'{self._wait_answer}:{user_msg}'))
-        except Exception as e:
-            logger.debug(e)
-            return 
-        return msg_id
+        msg_id = r.get(f'{self._wait_answer}:{user_msg}')
+        if msg_id and msg_id.isdecimal():
+            return int(msg_id)
