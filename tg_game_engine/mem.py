@@ -31,6 +31,5 @@ class UserContext:
 
     def get_next_msg_id(self, user_msg: str = None):
         msg_id = r.get(f'{self._wait_answer}:{user_msg}')
-        logger.debug(f'{self._wait_answer}:{user_msg}')
         if msg_id and msg_id.isdecimal():
             return int(msg_id)

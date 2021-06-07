@@ -1,11 +1,14 @@
-from tg_game_engine.db import models
-from sqlalchemy.orm import Session
-from tg_game_engine import schemas
+from os import environ
+from typing import Optional
+
 import requests
 from loguru import logger
-from os import environ
-from tg_game_engine.main import bot
+from sqlalchemy.orm import Session
 from telebot import types
+from telebot.apihelper import ApiTelegramException
+from tg_game_engine import schemas
+from tg_game_engine.db import models
+from tg_game_engine.main import bot
 from tg_game_engine.mem import UserContext
 
 DB_API_URL = environ.get('DB_API_URL') or ''
@@ -44,15 +47,73 @@ def make_buttons(message: schemas.Message) -> types.ReplyKeyboardMarkup:
     return keyboard
 
 
-def send(message: schemas.Message, user: models.TelegramUser):
+def get_media(db: Session, message: schemas.Message, try_get_local=True):
+    media = db.query(models.Media).filter_by(uid=message.media_uid)
+    if media and try_get_local:
+        return media.file_id
+    return requests.get(f'{DB_API_URL}/media/{message.media_uid}').content
+
+
+def save_media(db: Session, message: schemas.Message, send_msg):
+    if send_msg.content_type == 'photo':
+        file_id = sorted(send_msg.photo, key=lambda item: item.width)[-1].file_id
+    elif send_msg.content_type == 'voice':
+        file_id = send_msg.voice
+    elif send_msg.content_type == 'video_note':
+        file_id = send_msg.video_note
+
+    db.add(models.Media(
+        uid=message.media_uid,
+        file_id=file_id
+    ))
+    db.commit()
+
+
+def send_media_msg(tg_ig: int, content_type: str, media, caption: Optional[str], buttons):
+    if content_type == 'photo':
+        return bot.send_photo(tg_ig, media, caption, reply_markup=buttons)
+    elif content_type == 'audio':
+        return bot.send_audio(tg_ig, media, caption, reply_markup=buttons)
+    elif content_type == 'video_note':
+        return bot.send_video_note(tg_ig, media, caption, reply_markup=buttons)
+
+
+def send(db: Session, message: schemas.Message, user: models.TelegramUser):
     buttons = make_buttons(message)
-    bot.send_message(user.telegram_id, message.text, reply_markup=buttons)
+    if message.content_type == 'text':
+        bot.send_message(user.telegram_id, message.text, reply_markup=buttons)
+    elif message.content_type in ['photo', 'audio', 'video_note']:
+        media = get_media(db, message)
+        try:
+            send_msg = send_media_msg(
+                user.telegram_id,
+                message.content_type,
+                media,
+                message.text,
+                buttons,
+            )
+        except ApiTelegramException:
+            media = get_media(db, message, try_get_local=False)
+            send_msg = send_media_msg(
+                user.telegram_id,
+                message.content_type,
+                media,
+                message.text,
+                buttons,
+            )
+
+        if isinstance(media, bytes):
+            save_media(db, message, send_msg)
 
 
-def send_next_step(db: Session, user_context: UserContext, user_msg: str = None):
+def send_next_step(
+    db: Session,
+    user_context: UserContext,
+    user_msg: str = None,
+):
     user = get_user(db, user_context.tg_id)
     message = get_message(user, user_context, user_msg)
-    send(message, user)
+    send(db, message, user)
     user_context.set_wait_answers(message)
     user.message_id = message.id
     user.chapter_id = message.chapter_id
