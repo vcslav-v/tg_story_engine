@@ -29,7 +29,7 @@ class UserContext:
         for btn in message.buttons:
             r.set(f'{self._wait_answer}:{btn.text}', btn.next_message_id)
 
-    def get_next_msg_id(self, user_msg: str):
+    def get_next_msg_id(self, user_msg: str = None):
         try:
             msg_id = int(r.get(f'{self._wait_answer}:{user_msg}'))
         except Exception:
