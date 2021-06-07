@@ -2,9 +2,16 @@ import redis
 from tg_game_engine import schemas
 from tg_game_engine.main import REDIS
 
+from urllib.parse import urlparse
 
+parsed_redis_url = urlparse(REDIS)
 r = redis.Redis(
-    host=REDIS,
+    host=parsed_redis_url.hostname,
+    port=parsed_redis_url.port,
+    username=parsed_redis_url.username,
+    password=parsed_redis_url.password,
+    ssl=True,
+    ssl_cert_reqs=None,
     decode_responses=True,
 )
 
