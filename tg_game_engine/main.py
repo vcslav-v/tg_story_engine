@@ -5,7 +5,7 @@ from flask import Flask, request
 
 APP_URL = environ.get('APP_URL')
 BOT_TOKEN = environ.get('BOT_TOKEN')
-REDIS = environ.get('REDIS_URL')
+REDIS = environ.get('REDIS_TLS_URL')
 
 bot = telebot.TeleBot(BOT_TOKEN)
 app = Flask(__name__)

@@ -1,7 +1,7 @@
 import redis
 from tg_game_engine import schemas
 from tg_game_engine.main import REDIS
-
+from loguru import logger
 from urllib.parse import urlparse
 
 parsed_redis_url = urlparse(REDIS)
@@ -18,6 +18,7 @@ r = redis.Redis(
 
 class UserContext:
     def __init__(self, tg_id: int):
+        logger.debug(f'Make UserContext({tg_id})')
         self.tg_id = tg_id
         self._wait_answer = f'{tg_id}:wait_answer'
 
@@ -32,6 +33,7 @@ class UserContext:
     def get_next_msg_id(self, user_msg: str = None):
         try:
             msg_id = int(r.get(f'{self._wait_answer}:{user_msg}'))
-        except Exception:
-            return
+        except Exception as e:
+            logger.debug(e)
+            return 
         return msg_id
