@@ -27,7 +27,7 @@ def get_message(
     next_msg_id = user_context.get_next_msg_id(user_msg)
     if not next_msg_id:
         next_msg_id = user.message_id
-    req_url = f'{DB_API_URL}/msg/{user.message_id}' if next_msg_idы else DB_API_URL
+    req_url = f'{DB_API_URL}/msg/{user.message_id}' if next_msg_id else DB_API_URL
     resp = requests.get(req_url)
     return schemas.Message.parse_raw(resp.text)
 
