@@ -1,10 +1,12 @@
 from datetime import datetime
+from os import environ
 from urllib.parse import urlparse
 
 import redis
 
 from tg_game_engine import schemas
-from tg_game_engine.main import REDIS
+
+REDIS = environ.get('REDIS_TLS_URL') or ''
 
 parsed_redis_url = urlparse(REDIS)
 r = redis.Redis(

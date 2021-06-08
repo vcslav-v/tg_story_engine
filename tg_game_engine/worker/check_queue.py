@@ -17,7 +17,7 @@ def start():
             else:
                 mem.push_back_to_queue(command, timestamp)
                 break
-        sleep(10)
+        sleep(1)
 
 
 def run(command: str):

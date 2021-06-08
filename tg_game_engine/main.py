@@ -9,7 +9,6 @@ from tg_game_engine.worker import check_queue
 
 APP_URL = environ.get('APP_URL') or ''
 BOT_TOKEN = environ.get('BOT_TOKEN') or ''
-REDIS = environ.get('REDIS_TLS_URL') or ''
 
 bot = telebot.TeleBot(BOT_TOKEN)
 app = Flask(__name__)
