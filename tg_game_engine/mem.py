@@ -52,7 +52,7 @@ class UserContext:
         if not message.buttons:
             return
         for btn in message.buttons:
-            r.set(f'{self._wait_answer}:{btn.text}', btn.next_message_id)
+            r.set(f'{self.wait_answer}:{btn.text}', btn.next_message_id)
 
     def get_next_msg_id(self, user_msg: str = None):
         msg_id = r.get(f'{self.wait_answer}:{user_msg}')

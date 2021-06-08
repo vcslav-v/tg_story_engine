@@ -15,9 +15,6 @@ def start():
             if now_timestamp >= timestamp:
                 mem.rem_from_queue(command)
                 run(command)
-            else:
-                mem.push_back_to_queue(command, timestamp)
-                break
         sleep(1)
 
 
