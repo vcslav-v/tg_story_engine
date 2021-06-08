@@ -5,7 +5,6 @@ from datetime import datetime
 from tg_game_engine import bot_tools
 from tg_game_engine.db import tools as db_tools
 from tg_game_engine.db.main import SessionLocal
-from typing import List
 
 
 @logger.catch
@@ -14,18 +13,19 @@ def start():
         now_timestamp = int(datetime.timestamp(datetime.utcnow()))
         for command, timestamp in mem.queue():
             if now_timestamp >= timestamp:
-                complite_commands = run(command)
-                mem.rem_from_queue(complite_commands)
+                mem.rem_from_queue(command)
+                run(command)
+            else:
+                break
         sleep(1)
 
 
-def run(command: str) -> List[str]:
-    raw_user_id, call_to = command.split(':')
+def run(command: str):
+    raw_user_id, call_to, *tail = command.split(':')
     user_id = int(raw_user_id)
     user_context = mem.UserContext(user_id)
     if call_to == mem.SEND_MSG_TYPING:
         bot_tools.send_status(user_id, user_context.get_next_msg_type())
-        return []
 
     elif call_to == mem.SEND_NEXT_MSG:
         db = SessionLocal()

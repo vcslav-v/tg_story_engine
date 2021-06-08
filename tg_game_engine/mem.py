@@ -30,9 +30,8 @@ def queue():
     return r.zscan_iter(MSG_QUEUE_PREFIX)
 
 
-def rem_from_queue(keys: List[str]):
-    for key in keys:
-        r.zrem(MSG_QUEUE_PREFIX, key)
+def rem_from_queue(key: str):
+    r.zrem(MSG_QUEUE_PREFIX, key)
 
 
 def push_back_to_queue(command, timestamp):
@@ -65,7 +64,7 @@ class UserContext:
         r.set(self.next_msg, message.json())
         r.set(self.next_msg_type, message.content_type)
         if message.content_type == 'text':
-            typing_time = (len(message.text) / message.speed_type) * 60
+            typing_time = int((len(message.text) / message.speed_type) * 60)
         else:
             typing_time = MEDIA_SEND_SEC
 
@@ -73,7 +72,8 @@ class UserContext:
         send_timestamp = now_timestamp + typing_time + message.timeout
         start_typing_timestamp = send_timestamp - typing_time
         r.zadd(MSG_QUEUE_PREFIX, {self.send_next_message: send_timestamp})
-        r.zadd(MSG_QUEUE_PREFIX, {self.send_msg_typing: start_typing_timestamp})
+        for index, type_time in enumerate(range(start_typing_timestamp, send_timestamp, 5)):
+            r.zadd(MSG_QUEUE_PREFIX, {f'{self.send_msg_typing}:{index}': type_time})
 
     def get_next_msg_type(self) -> str:
         return r.get(self.next_msg_type)
