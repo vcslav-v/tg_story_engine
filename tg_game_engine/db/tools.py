@@ -51,6 +51,7 @@ def get_media(db: Session, message: schemas.Message, try_get_local=True):
     media = db.query(models.Media).filter_by(uid=message.media_uid)
     if media and try_get_local:
         return media.file_id
+    logger.debug(f'{DB_API_URL}/media/{message.media_uid}')
     return requests.get(f'{DB_API_URL}/media/{message.media_uid}').content
 
 
