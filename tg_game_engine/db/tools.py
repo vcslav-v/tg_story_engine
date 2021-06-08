@@ -51,7 +51,6 @@ def get_media(db: Session, message: schemas.Message, try_get_local=True):
     media = db.query(models.Media).filter_by(uid=message.media_uid)
     if media and try_get_local:
         return media.file_id
-    logger.debug(f'{DB_API_URL}/media/{message.media_uid}')
     return requests.get(f'{DB_API_URL}/media/{message.media_uid}').content
 
 
@@ -81,10 +80,12 @@ def send_media_msg(tg_ig: int, content_type: str, media, caption: Optional[str],
 
 def send(db: Session, message: schemas.Message, user: models.TelegramUser):
     buttons = make_buttons(message)
+    logger.debug(message.dict())
     if message.content_type == 'text':
         bot.send_message(user.telegram_id, message.text, reply_markup=buttons)
     elif message.content_type in ['photo', 'audio', 'video_note']:
         media = get_media(db, message)
+        logger.debug(type(media))
         try:
             send_msg = send_media_msg(
                 user.telegram_id,
