@@ -29,6 +29,10 @@ def queue():
     return r.zscan_iter(MSG_QUEUE_PREFIX)
 
 
+def rem_from_queue(key: str):
+    r.zrem(MSG_QUEUE_PREFIX, key)
+
+
 def push_back_to_queue(command, timestamp):
     r.zadd(MSG_QUEUE_PREFIX, {command: timestamp})
 
