@@ -1,7 +1,7 @@
 from datetime import datetime
 from os import environ
 from urllib.parse import urlparse
-
+from loguru import logger
 import redis
 
 from tg_game_engine import schemas
@@ -64,6 +64,9 @@ class UserContext:
         r.set(self.next_msg_type, message.content_type)
         if message.content_type == 'text':
             typing_time = (len(message.text) / message.speed_type) * 60
+            logger.debug(typing_time)
+            logger.debug(len(message.text))
+            logger.debug(message.speed_type)
         else:
             typing_time = MEDIA_SEND_SEC
 
