@@ -48,7 +48,7 @@ def make_buttons(message: schemas.Message) -> types.ReplyKeyboardMarkup:
 
 
 def get_media(db: Session, message: schemas.Message, try_get_local=True):
-    media = db.query(models.Media).filter_by(uid=message.media_uid)
+    media = db.query(models.Media).filter_by(uid=message.media_uid).first()
     if media and try_get_local:
         return media.file_id
     return requests.get(f'{DB_API_URL}/media/{message.media_uid}').content
