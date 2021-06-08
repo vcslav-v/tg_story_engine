@@ -3,6 +3,7 @@ from os import environ
 from urllib.parse import urlparse
 from loguru import logger
 import redis
+from typing import List
 
 from tg_game_engine import schemas
 
@@ -29,8 +30,9 @@ def queue():
     return r.zscan_iter(MSG_QUEUE_PREFIX)
 
 
-def rem_from_queue(key: str):
-    r.zrem(MSG_QUEUE_PREFIX, key)
+def rem_from_queue(keys: List[str]):
+    for key in keys:
+        r.zrem(MSG_QUEUE_PREFIX, key)
 
 
 def push_back_to_queue(command, timestamp):
@@ -64,9 +66,6 @@ class UserContext:
         r.set(self.next_msg_type, message.content_type)
         if message.content_type == 'text':
             typing_time = (len(message.text) / message.speed_type) * 60
-            logger.debug(typing_time)
-            logger.debug(len(message.text))
-            logger.debug(message.speed_type)
         else:
             typing_time = MEDIA_SEND_SEC
 

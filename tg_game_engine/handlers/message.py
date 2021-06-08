@@ -5,8 +5,8 @@ from tg_game_engine.main import bot
 from tg_game_engine.mem import UserContext
 
 
-@logger.catch
 @bot.message_handler(commands=['start'])
+@logger.catch
 def start_message(msg):
     db = SessionLocal()
     user_context = UserContext(msg.from_user.id)
@@ -14,10 +14,10 @@ def start_message(msg):
     db.close()
 
 
-@logger.catch
 @bot.message_handler(
     content_types='text',
 )
+@logger.catch
 def text_reply(msg):
     db = SessionLocal()
     user_context = UserContext(msg.from_user.id)
