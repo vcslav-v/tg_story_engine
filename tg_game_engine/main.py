@@ -33,7 +33,7 @@ def test():
 def run_workers():
     def check_queue_worker():
         from tg_game_engine.worker import check_queue
-        check_queue()
+        check_queue.start()
 
     thread = threading.Thread(target=check_queue_worker)
     thread.start()
