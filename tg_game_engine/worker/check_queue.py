@@ -32,7 +32,11 @@ def run(command: str):
         user = db_tools.get_user(db, user_id)
         message = user_context.get_next_msg()
         bot_tools.send(db, message, user)
-        user_context.set_wait_answers(message)
+        if message.buttons:
+            user_context.set_wait_answers(message)
+        elif message.link:
+            link_message = db_tools.get_message_by_id(message.link)
+            user_context.push_to_queue(link_message)
         user.message_id = message.id
         user.chapter_id = message.chapter_id
         db.commit()
