@@ -1,9 +1,38 @@
 from loguru import logger
 from time import sleep
+from tg_game_engine import mem
+from datetime import datetime
+from tg_game_engine import bot_tools
+from tg_game_engine.db import tools as db_tools
+from tg_game_engine.db.main import SessionLocal
 
 
 @logger.catch
-def run():
+def start():
     while True:
-        logger.debug('Here')
+        now_timestamp = int(datetime.timestamp(datetime.utcnow()))
+        for command, timestamp in mem.queue():
+            if now_timestamp >= timestamp:
+                run(command)
+            else:
+                mem.push_back_to_queue(command, timestamp)
+                break
         sleep(10)
+
+
+def run(command: str):
+    raw_user_id, call_to = command.split(':')
+    user_id = int(raw_user_id)
+    user_context = mem.UserContext(user_id)
+    if call_to == mem.SEND_MSG_TYPING:
+        bot_tools.send_status(user_id, user_context.get_next_msg_type())
+    elif call_to == mem.SEND_NEXT_MSG:
+        db = SessionLocal()
+        user = db_tools.get_user(db, user_id)
+        message = user_context.get_next_msg()
+        bot_tools.send(db, message, user)
+        user_context.set_wait_answers(message)
+        user.message_id = message.id
+        user.chapter_id = message.chapter_id
+        db.commit()
+        db.close()

@@ -37,5 +37,5 @@ if bot.get_webhook_info().url != url:
     bot.remove_webhook()
     bot.set_webhook(url)
 
-thread = threading.Thread(target=check_queue.run)
+thread = threading.Thread(target=check_queue.start)
 thread.start()

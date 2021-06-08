@@ -1,5 +1,5 @@
 from loguru import logger
-from tg_game_engine.db import tools
+from tg_game_engine import bot_tools
 from tg_game_engine.db.main import SessionLocal
 from tg_game_engine.main import bot
 from tg_game_engine.mem import UserContext
@@ -10,7 +10,7 @@ from tg_game_engine.mem import UserContext
 def start_message(msg):
     db = SessionLocal()
     user_context = UserContext(msg.from_user.id)
-    tools.send_next_step(db, user_context)
+    bot_tools.send_next_step(db, user_context)
     db.close()
 
 
@@ -21,5 +21,5 @@ def start_message(msg):
 def text_reply(msg):
     db = SessionLocal()
     user_context = UserContext(msg.from_user.id)
-    tools.send_next_step(db, user_context, msg.text)
+    bot_tools.send_next_step(db, user_context, msg.text)
     db.close()
