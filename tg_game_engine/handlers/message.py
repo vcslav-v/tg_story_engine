@@ -7,10 +7,10 @@ from tg_game_engine.db.tools import add_referal
 
 
 def extract_link_data(text):
-    if len(text.split()) <= 1:
-        return
-    raw_data = text.split()[1].split('ZZ')
     data = {}
+    if len(text.split()) <= 1:
+        return data
+    raw_data = text.split()[1].split('ZZ')
     for item in raw_data:
         key, value = item.split('-')
         data[key] = value
