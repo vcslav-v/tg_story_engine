@@ -12,6 +12,8 @@ BOT_TOKEN = environ.get('BOT_TOKEN') or ''
 bot = telebot.TeleBot(BOT_TOKEN)
 app = Flask(__name__)
 
+BOT_USERNAME = bot.get_me().username
+
 from .handlers import message
 
 

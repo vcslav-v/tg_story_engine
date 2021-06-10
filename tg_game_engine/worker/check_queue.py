@@ -31,7 +31,11 @@ def run(command: str):
         db = SessionLocal()
         user = db_tools.get_user(db, user_id)
         message = user_context.get_next_msg()
-        bot_tools.send(db, message, user)
+        if message.referal_block > user.num_referals:
+            user_context.set_blocked_msg(message)
+            db.close()
+            return
+        bot_tools.send(db, message, user, user_context)
         if message.buttons:
             user_context.set_wait_answers(message)
         elif message.link:

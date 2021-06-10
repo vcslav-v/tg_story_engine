@@ -6,7 +6,7 @@ from telebot.apihelper import ApiTelegramException
 from loguru import logger
 from tg_game_engine import schemas
 from tg_game_engine.db import models, tools
-from tg_game_engine.main import bot
+from tg_game_engine.main import bot, APP_URL
 from tg_game_engine.mem import UserContext
 
 
@@ -30,10 +30,19 @@ def send_media_msg(tg_ig: int, content_type: str, media, caption: Optional[str],
         return bot.send_video_note(tg_ig, media, caption, reply_markup=buttons)
 
 
-def send(db: Session, message: schemas.Message, user: models.TelegramUser):
+def send(
+    db: Session,
+    message: schemas.Message,
+    user: models.TelegramUser,
+    user_context: UserContext
+):
     buttons = make_buttons(message)
     if message.content_type == 'text':
-        bot.send_message(user.telegram_id, message.text, reply_markup=buttons)
+        bot.send_message(
+            user.telegram_id,
+            message.text.format_map(user_context.format),
+            reply_markup=buttons
+        )
     elif message.content_type in ['photo', 'audio', 'video_note']:
         media = tools.get_media(db, message)
         try:
@@ -64,16 +73,16 @@ def send_next_step(
     user_msg: str = None,
 ):
     user = tools.get_user(db, user_context.tg_id)
-    logger.debug(user_context.is_msg_in_queue())
     if user_context.is_msg_in_queue():
         reaction_msg = tools.get_reaction_msg(db, user_context.get_reaction_uid())
-        logger.debug(reaction_msg)
-        logger.debug(user_context.get_reaction_uid())
         if reaction_msg:
-            logger.debug(reaction_msg.dict())
-            send(db, reaction_msg, user)
+            send(db, reaction_msg, user, user_context)
         return
-    message = tools.get_message(db, user, user_context, user_msg)
+    if user_context.is_blocked():
+        message = user_context.pop_blocked_msg()
+    else:
+        message = tools.get_message(db, user, user_context, user_msg)
+
     if message:
         user_context.push_to_queue(message)
 

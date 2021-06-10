@@ -10,6 +10,12 @@ from random import choice
 DB_API_URL = environ.get('DB_API_URL') or ''
 
 
+def add_referal(db: Session, tg_id: int):
+    parrent_user: models.TelegramUser = db.query(models.TelegramUser).filter_by(telegram_id=tg_id).first()
+    parrent_user.num_referals = parrent_user.num_referals + 1
+    db.commit()
+
+
 def get_user(db: Session, tg_id: int) -> models.TelegramUser:
     tg_user = db.query(models.TelegramUser).filter_by(telegram_id=tg_id).first()
     if not tg_user:

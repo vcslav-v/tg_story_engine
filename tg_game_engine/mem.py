@@ -6,6 +6,7 @@ import redis
 from typing import List
 
 from tg_game_engine import schemas
+from tg_game_engine.main import BOT_USERNAME
 
 REDIS = environ.get('REDIS_TLS_URL') or ''
 
@@ -45,8 +46,11 @@ class UserContext:
         self.next_msg = f'{tg_id}:next_msg'
         self.next_msg_type = f'{tg_id}:next_msg_type'
         self.wait_reaction_uid = f'{tg_id}:wait_reaction_uid'
+        self.blocked_msg = f'{tg_id}:blocked_msg'
         self.send_next_message = f'{tg_id}:{SEND_NEXT_MSG}'
         self.send_msg_typing = f'{tg_id}:{SEND_MSG_TYPING}'
+
+        self.format = {'ref_url': f'https://t.me/{BOT_USERNAME}?start=ref-{tg_id}'}
 
     def set_wait_answers(self, message: schemas.Message):
         for key in r.keys(f'{self.wait_answer}:*'):
@@ -92,3 +96,14 @@ class UserContext:
         if items:
             return True
         return False
+
+    def set_blocked_msg(self, message: schemas.Message):
+        r.set(self.blocked_msg, message.json())
+
+    def is_blocked(self):
+        return bool(r.exist(self.blocked_msg))
+
+    def pop_blocked_msg(self):
+        message = r.get(self.blocked_msg)
+        r.delete(self.blocked_msg)
+        return message
