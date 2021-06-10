@@ -101,7 +101,7 @@ class UserContext:
         r.set(self.blocked_msg, message.json())
 
     def is_blocked(self):
-        return bool(r.exist(self.blocked_msg))
+        return bool(r.exists(self.blocked_msg))
 
     def pop_blocked_msg(self):
         message = r.get(self.blocked_msg)
