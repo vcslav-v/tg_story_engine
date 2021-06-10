@@ -35,11 +35,9 @@ def run(command: str):
         if message.buttons:
             user_context.set_wait_answers(message)
         elif message.link:
-            link_message = db_tools.get_message_by_id(message.link)
+            link_message = db_tools.get_message_by_id(db, message.link)
             user_context.push_to_queue(link_message)
         user.message_id = message.id
         user.chapter_id = message.chapter_id
         db.commit()
         db.close()
-
-        return [command, f'{raw_user_id}:{mem.SEND_MSG_TYPING}']

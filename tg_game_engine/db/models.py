@@ -1,6 +1,7 @@
 """DataBase models."""
-from sqlalchemy import Column, Integer, Text
+from sqlalchemy import Column, ForeignKey, Integer, Text
 from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import relationship
 
 Base = declarative_base()
 
@@ -27,3 +28,41 @@ class Media(Base):
 
     file_id = Column(Text)
     uid = Column(Text)
+
+
+class WaitReaction(Base):
+    """Wait reactions."""
+
+    __tablename__ = 'wait_reactions'
+
+    id = Column(Integer, primary_key=True)
+
+    name = Column(Text)
+    uid = Column(Text)
+
+    reactions = relationship(
+        'Reaction',
+        back_populates='wait_reaction',
+        cascade='delete-orphan,delete',
+    )
+
+
+class Reaction(Base):
+    """Reactions."""
+
+    __tablename__ = 'reactions'
+
+    id = Column(Integer, primary_key=True)
+
+    text = Column(Text)
+
+    wait_reaction_id = Column(
+        Integer,
+        ForeignKey('wait_reactions.id'),
+    )
+
+    wait_reaction = relationship(
+        'WaitReaction',
+        back_populates='reactions',
+        passive_deletes=True,
+    )

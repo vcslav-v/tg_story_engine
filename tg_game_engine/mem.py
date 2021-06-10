@@ -44,6 +44,7 @@ class UserContext:
         self.wait_answer = f'{tg_id}:wait_answers'
         self.next_msg = f'{tg_id}:next_msg'
         self.next_msg_type = f'{tg_id}:next_msg_type'
+        self.wait_reaction_uid = f'{tg_id}:wait_reaction_uid'
         self.send_next_message = f'{tg_id}:{SEND_NEXT_MSG}'
         self.send_msg_typing = f'{tg_id}:{SEND_MSG_TYPING}'
 
@@ -63,6 +64,8 @@ class UserContext:
     def push_to_queue(self, message: schemas.Message):
         r.set(self.next_msg, message.json())
         r.set(self.next_msg_type, message.content_type)
+        if message.wait_reaction_uid:
+            r.set(self.wait_reaction_uid, message.wait_reaction_uid)
         if message.content_type == 'text':
             typing_time = int((len(message.text) / message.speed_type) * 60)
         else:
@@ -80,3 +83,12 @@ class UserContext:
 
     def get_next_msg(self) -> schemas.Message:
         return schemas.Message.parse_raw(r.get(self.next_msg))
+
+    def get_reaction_uid(self) -> str:
+        return r.get(self.wait_reaction_uid)
+
+    def is_msg_in_queue(self):
+        cursor, items = r.zscan(MSG_QUEUE_PREFIX, match=f'{self.tg_id}:{SEND_NEXT_MSG}')
+        if items:
+            return True
+        return False

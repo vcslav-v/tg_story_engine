@@ -9,9 +9,9 @@ class Button(BaseModel):
 
 
 class Message(BaseModel):
-    id: int
+    id: Optional[int]
     content_type: str
-    chapter_id: int
+    chapter_id: Optional[int]
     speed_type: int
     timeout: int
     text: Optional[str]
@@ -20,3 +20,9 @@ class Message(BaseModel):
     buttons: Optional[List[Button]]
     wait_reaction_uid: Optional[str]
     referal_block: Optional[int]
+
+
+class WaitReactions(BaseModel):
+    name: str
+    uid: str
+    messages: List[str]

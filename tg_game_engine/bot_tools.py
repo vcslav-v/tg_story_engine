@@ -64,8 +64,14 @@ def send_next_step(
     user_msg: str = None,
 ):
     user = tools.get_user(db, user_context.tg_id)
-    message = tools.get_message(user, user_context, user_msg)
-    user_context.push_to_queue(message)
+    if user_context.is_msg_in_queue():
+        reaction_msg = tools.get_reaction_msg(db, user_context.get_reaction_uid())
+        if reaction_msg:
+            send(db, reaction_msg, user)
+        return
+    message = tools.get_message(db, user, user_context, user_msg)
+    if message:
+        user_context.push_to_queue(message)
 
 
 def send_status(tg_id: int, content_type: str):

@@ -5,7 +5,8 @@ from sqlalchemy.orm import Session
 from tg_game_engine import schemas
 from tg_game_engine.db import models
 from tg_game_engine.mem import UserContext
-
+from typing import Optional
+from random import choice
 DB_API_URL = environ.get('DB_API_URL') or ''
 
 
@@ -40,7 +41,20 @@ def save_media(db: Session, message: schemas.Message, send_msg):
     db.commit()
 
 
+def get_reaction_msg(db: Session, uid: str) -> Optional[schemas.Message]:
+    wait_reaction: models.WaitReaction = db.query(models.WaitReaction).filter_by(uid=uid).first()
+    if not wait_reaction:
+        return None
+    return schemas.Message(
+        content_type='text',
+        speed_type=2000,
+        timeout=0,
+        text=choice(wait_reaction.reactions).text
+    )
+
+
 def get_message(
+    db: Session,
     user: models.TelegramUser,
     user_context: UserContext,
     user_msg: str = None,
@@ -48,10 +62,30 @@ def get_message(
     next_msg_id = user_context.get_next_msg_id(user_msg)
     if not next_msg_id:
         next_msg_id = user.message_id
-    return get_message_by_id(next_msg_id)
+    return get_message_by_id(db, next_msg_id)
 
 
-def get_message_by_id(msg_id: int = None) -> schemas.Message:
+def get_message_by_id(db: Session, msg_id: int = None) -> schemas.Message:
     req_url = f'{DB_API_URL}/msg/{msg_id}' if msg_id else DB_API_URL
     resp = requests.get(req_url)
-    return schemas.Message.parse_raw(resp.text)
+    message: schemas.Message = schemas.Message.parse_raw(resp.text)
+    if message.wait_reaction_uid:
+        local_wait_reactions = db.query(
+            models.WaitReaction
+        ).filter_by(uid=message.wait_reaction_uid).first()
+        if not local_wait_reactions:
+            raw_wait_reactions = requests.get(
+                f'{DB_API_URL}/wait_reactions/{message.wait_reaction_uid}'
+            ).text
+            wait_reactions: schemas.WaitReactions = schemas.WaitReactions.parse_raw(raw_wait_reactions)
+            wait_reactions_model = models.WaitReaction(
+                name=wait_reactions.name,
+                uid=wait_reactions.uid,
+            )
+            db.add(wait_reactions_model)
+            for react in wait_reactions.messages:
+                db.add(models.Reaction(
+                    text=react,
+                    wait_reaction=wait_reactions_model,
+                ))
+    return message
