@@ -88,4 +88,5 @@ def get_message_by_id(db: Session, msg_id: int = None) -> schemas.Message:
                     text=react,
                     wait_reaction=wait_reactions_model,
                 ))
+            db.commit()
     return message

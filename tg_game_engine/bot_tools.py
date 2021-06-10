@@ -68,6 +68,7 @@ def send_next_step(
     if user_context.is_msg_in_queue():
         reaction_msg = tools.get_reaction_msg(db, user_context.get_reaction_uid())
         logger.debug(reaction_msg)
+        logger.debug(user_context.get_reaction_uid())
         if reaction_msg:
             logger.debug(reaction_msg.dict())
             send(db, reaction_msg, user)
