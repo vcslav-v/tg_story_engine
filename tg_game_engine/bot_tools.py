@@ -3,7 +3,7 @@ from typing import Optional
 from sqlalchemy.orm import Session
 from telebot import types
 from telebot.apihelper import ApiTelegramException
-
+from loguru import logger
 from tg_game_engine import schemas
 from tg_game_engine.db import models, tools
 from tg_game_engine.main import bot
@@ -64,6 +64,7 @@ def send_next_step(
     user_msg: str = None,
 ):
     user = tools.get_user(db, user_context.tg_id)
+    logger.debug(user_context.is_msg_in_queue())
     if user_context.is_msg_in_queue():
         reaction_msg = tools.get_reaction_msg(db, user_context.get_reaction_uid())
         if reaction_msg:
