@@ -4,6 +4,7 @@ from tg_game_engine.db.main import SessionLocal
 from tg_game_engine.main import bot
 from tg_game_engine.mem import UserContext
 from tg_game_engine.db.tools import add_referal
+from tg_game_engine.db import tools as db_tools
 
 
 def extract_link_data(text):
@@ -24,9 +25,11 @@ def start_message(msg):
     user_context = UserContext(msg.from_user.id)
     link_data = extract_link_data(msg.text)
     if link_data.get('ref') and link_data.get('ref').isdecimal():
-        parrent_user_context = UserContext(int(link_data.get('ref')))
-        add_referal(db, parrent_user_context.tg_id)
-        bot_tools.send_next_step(db, user_context)
+        parrent_tg_id = int(link_data.get('ref'))
+        if db_tools.is_user_exist(parrent_tg_id):
+            parrent_user_context = UserContext(parrent_tg_id)
+            add_referal(db, parrent_user_context.tg_id)
+            bot_tools.send_next_step(db, parrent_user_context)
     bot_tools.send_next_step(db, user_context)
     db.close()
 
