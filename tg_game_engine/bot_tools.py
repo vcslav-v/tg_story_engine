@@ -73,15 +73,12 @@ def send_next_step(
     user_msg: str = None,
 ):
     user = tools.get_user(db, user_context.tg_id)
-    if user_context.is_msg_in_queue():
+    if user_context.is_msg_in_queue() or user_context.is_blocked():
         reaction_msg = tools.get_reaction_msg(db, user_context.get_reaction_uid())
         if reaction_msg:
             send(db, reaction_msg, user, user_context)
         return
-    if user_context.is_blocked():
-        message = user_context.pop_blocked_msg()
-    else:
-        message = tools.get_message(db, user, user_context, user_msg)
+    message = tools.get_message(db, user, user_context, user_msg)
 
     if message:
         user_context.push_to_queue(message)

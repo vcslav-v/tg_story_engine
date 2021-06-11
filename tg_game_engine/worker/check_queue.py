@@ -32,9 +32,11 @@ def run(command: str):
         user = db_tools.get_user(db, user_id)
         message = user_context.get_next_msg()
         if message.referal_block and message.referal_block > user.num_referals:
-            user_context.set_blocked_msg(message)
+            user_context.block_msg()
             db.close()
             return
+        if user_context.is_blocked():
+            user_context.deblock_msg()
         bot_tools.send(db, message, user, user_context)
         if message.buttons:
             user_context.set_wait_answers(message)

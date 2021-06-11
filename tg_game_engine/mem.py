@@ -46,7 +46,7 @@ class UserContext:
         self.next_msg = f'{tg_id}:next_msg'
         self.next_msg_type = f'{tg_id}:next_msg_type'
         self.wait_reaction_uid = f'{tg_id}:wait_reaction_uid'
-        self.blocked_msg = f'{tg_id}:blocked_msg'
+        self.block_msg = f'{tg_id}:block_msg'
         self.send_next_message = f'{tg_id}:{SEND_NEXT_MSG}'
         self.send_msg_typing = f'{tg_id}:{SEND_MSG_TYPING}'
 
@@ -97,13 +97,11 @@ class UserContext:
             return True
         return False
 
-    def set_blocked_msg(self, message: schemas.Message):
-        r.set(self.blocked_msg, message.json())
+    def block_msg(self):
+        r.set(self.block_msg, '1')
+
+    def deblock_msg(self):
+        r.delete(self.block_msg)
 
     def is_blocked(self):
-        return bool(r.exists(self.blocked_msg))
-
-    def pop_blocked_msg(self):
-        message = r.get(self.blocked_msg)
-        r.delete(self.blocked_msg)
-        return schemas.Message.parse_raw(message)
+        return bool(r.exists(self.block_msg))
