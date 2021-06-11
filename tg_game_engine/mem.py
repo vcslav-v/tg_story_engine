@@ -65,11 +65,14 @@ class UserContext:
         if msg_id and msg_id.isdecimal():
             return int(msg_id)
 
-    def push_to_queue(self, message: schemas.Message):
+    def set_next_msg(self, message: schemas.Message):
         r.set(self.next_msg, message.json())
         r.set(self.next_msg_type, message.content_type)
         if message.wait_reaction_uid:
             r.set(self.wait_reaction_uid, message.wait_reaction_uid)
+
+    def push_to_queue(self, message: schemas.Message):
+        self.set_next_msg(message)
         if message.content_type == 'text':
             typing_time = int((len(message.text) / message.speed_type) * 60)
         else:
