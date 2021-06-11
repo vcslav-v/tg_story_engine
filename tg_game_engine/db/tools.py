@@ -16,6 +16,10 @@ def add_referal(db: Session, tg_id: int):
     db.commit()
 
 
+def is_user_exist(db: Session, tg_id: int):
+    return db.query(models.TelegramUser).filter_by(telegram_id=tg_id).exists()
+
+
 def get_user(db: Session, tg_id: int) -> models.TelegramUser:
     tg_user = db.query(models.TelegramUser).filter_by(telegram_id=tg_id).first()
     if not tg_user:

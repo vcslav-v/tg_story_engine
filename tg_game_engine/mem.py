@@ -106,4 +106,4 @@ class UserContext:
     def pop_blocked_msg(self):
         message = r.get(self.blocked_msg)
         r.delete(self.blocked_msg)
-        return message
+        return schemas.Message.parse_raw(message)
