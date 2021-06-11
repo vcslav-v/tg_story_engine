@@ -31,6 +31,7 @@ def start_message(msg):
         if is_parrent_exist and is_new_user:
             parrent_user_context = UserContext(parrent_tg_id)
             add_referal(db, parrent_user_context.tg_id)
+            parrent_user_context.deblock_msg()
             bot_tools.send_next_step(db, parrent_user_context)
     bot_tools.send_next_step(db, user_context)
     db.close()
