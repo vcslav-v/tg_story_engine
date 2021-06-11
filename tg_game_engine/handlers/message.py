@@ -26,7 +26,7 @@ def start_message(msg):
     link_data = extract_link_data(msg.text)
     if link_data.get('ref') and link_data.get('ref').isdecimal():
         parrent_tg_id = int(link_data.get('ref'))
-        if db_tools.is_user_exist(parrent_tg_id):
+        if db_tools.is_user_exist(db, parrent_tg_id):
             parrent_user_context = UserContext(parrent_tg_id)
             add_referal(db, parrent_user_context.tg_id)
             bot_tools.send_next_step(db, parrent_user_context)
