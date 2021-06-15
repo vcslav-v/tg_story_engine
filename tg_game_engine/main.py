@@ -1,8 +1,9 @@
 """Main module gamemaster_bot project."""
 import threading
 from os import environ
-
+from loguru import logger
 import telebot
+import json
 from flask import Flask, request
 
 
@@ -29,6 +30,17 @@ def getMessage():
 
 @app.route('/' + BOT_TOKEN, methods=['GET'])
 def test():
+    return 'ok', 200
+
+
+@app.route("/patreon/", methods=['POST'])
+def patreon():
+    data= json.loads(request.stream.read().decode("utf-8"))
+    logger.debug(data)
+    if data['data']['type'] == 'member':
+        pass
+    elif data['data']['type'] == 'pledge':
+        pass
     return 'ok', 200
 
 
