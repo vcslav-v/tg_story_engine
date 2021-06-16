@@ -10,6 +10,18 @@ from random import choice
 DB_API_URL = environ.get('DB_API_URL') or ''
 
 
+def set_patron_status(db: Session, email: str, status: str):
+    exist_patron = db.query(models.Patron).filter_by(email=email).first()
+    if exist_patron:
+        exist_patron.status = status
+    else:
+        db.add(models.Patron(
+            email=email,
+            status=status,
+        ))
+    db.commit()
+
+
 def add_referal(db: Session, tg_id: int):
     parrent_user: models.TelegramUser = db.query(models.TelegramUser).filter_by(telegram_id=tg_id).first()
     parrent_user.num_referals = parrent_user.num_referals + 1

@@ -3,9 +3,7 @@ import threading
 from os import environ
 from loguru import logger
 import telebot
-import json
-from flask import Flask, request
-
+from flask import Flask
 
 APP_URL = environ.get('APP_URL') or ''
 BOT_TOKEN = environ.get('BOT_TOKEN') or ''
@@ -15,33 +13,7 @@ app = Flask(__name__)
 
 BOT_USERNAME = bot.get_me().username
 
-from .handlers import message
-
-
-@app.route('/' + BOT_TOKEN, methods=['POST'])
-def getMessage():
-    bot.process_new_updates([
-            telebot.types.Update.de_json(
-                request.stream.read().decode('utf-8')
-            )
-    ])
-    return 'ok', 200
-
-
-@app.route('/' + BOT_TOKEN, methods=['GET'])
-def test():
-    return 'ok', 200
-
-
-@app.route("/patreon/", methods=['POST'])
-def patreon():
-    data= json.loads(request.stream.read().decode("utf-8"))
-    logger.debug(data)
-    if data['data']['type'] == 'member':
-        pass
-    elif data['data']['type'] == 'pledge':
-        pass
-    return 'ok', 200
+from .handlers import bot_message, web
 
 
 def run_workers():

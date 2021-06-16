@@ -17,6 +17,7 @@ class TelegramUser(Base):
     chapter_id = Column(Integer)
     message_id = Column(Integer)
     num_referals = Column(Integer, default=0)
+    email = Column(Text)
 
 
 class Media(Base):
@@ -66,3 +67,14 @@ class Reaction(Base):
         back_populates='reactions',
         passive_deletes=True,
     )
+
+
+class Patron(Base):
+    """Patron."""
+
+    __tablename__ = 'patrons'
+
+    id = Column(Integer, primary_key=True)
+
+    email = Column(Text)
+    status = Column(Text)
