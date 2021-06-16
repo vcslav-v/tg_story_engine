@@ -5,6 +5,7 @@ from tg_game_engine.main import bot
 from tg_game_engine.mem import UserContext
 from tg_game_engine.db.tools import add_referal
 from tg_game_engine.db import tools as db_tools
+from pydantic.class_validators import ma
 
 
 def extract_link_data(text):
@@ -31,9 +32,24 @@ def start_message(msg):
         if is_parrent_exist and is_new_user:
             parrent_user_context = UserContext(parrent_tg_id)
             add_referal(db, parrent_user_context.tg_id)
-            message = parrent_user_context.get_next_msg()
-            parrent_user_context.push_to_queue(message)
+            bot_tools.send_next_step(db, parrent_user_context, check_block=False)
     bot_tools.send_next_step(db, user_context)
+    db.close()
+
+
+@bot.message_handler(commands=['impatron'])
+@logger.catch
+def get_email(msg):
+    message = 'Введите email указанный на Patreon.'
+    bot.register_next_step_handler(message, set_email)
+
+
+@logger.catch
+def set_email(msg):
+    db = SessionLocal()
+    db_tools.set_email(db, msg.from_user.id, msg.text)
+    user_context = UserContext(msg.from_user.id)
+    bot_tools.send_next_step(db, user_context, check_block=False)
     db.close()
 
 

@@ -31,7 +31,9 @@ def run(command: str):
         db = SessionLocal()
         user = db_tools.get_user(db, user_id)
         message = user_context.get_next_msg()
-        if message.referal_block and message.referal_block > user.num_referals:
+        is_ref_block = message.referal_block and message.referal_block > user.num_referals
+        is_patron = db_tools.is_patron(user)
+        if is_ref_block and not is_patron:
             user_context.block_msg()
             db.close()
             return

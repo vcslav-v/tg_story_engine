@@ -41,6 +41,12 @@ def get_user(db: Session, tg_id: int) -> models.TelegramUser:
     return tg_user
 
 
+def is_patron(db: Session, user: models.TelegramUser) -> bool:
+    if user.email:
+        return bool(db.query(models.Patron).filter_by(email=user.email).count())
+    return False
+
+
 def get_media(db: Session, message: schemas.Message, try_get_local=True):
     media = db.query(models.Media).filter_by(uid=message.media_uid).first()
     if media and try_get_local:
@@ -112,3 +118,10 @@ def get_message_by_id(db: Session, msg_id: int = None) -> schemas.Message:
                 ))
             db.commit()
     return message
+
+
+def set_email(db: Session, tg_id: int, email: str):
+    user = get_user(db, tg_id)
+    if user:
+        user.email = email
+        db.commit()
