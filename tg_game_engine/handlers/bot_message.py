@@ -5,7 +5,6 @@ from tg_game_engine.main import bot
 from tg_game_engine.mem import UserContext
 from tg_game_engine.db.tools import add_referal
 from tg_game_engine.db import tools as db_tools
-from pydantic.class_validators import ma
 
 
 def extract_link_data(text):
