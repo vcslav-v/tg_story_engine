@@ -46,6 +46,7 @@ def get_email(msg):
 @logger.catch
 def set_email(msg):
     db = SessionLocal()
+    logger.debug(msg.text)
     db_tools.set_email(db, msg.from_user.id, msg.text)
     user_context = UserContext(msg.from_user.id)
     bot_tools.send_next_step(db, user_context, check_block=False)
