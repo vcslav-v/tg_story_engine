@@ -39,7 +39,7 @@ def start_message(msg):
 @bot.message_handler(commands=['impatron'])
 @logger.catch
 def get_email(msg):
-    message = 'Введите email указанный на Patreon.'
+    message = bot.reply_to(msg, 'Введите email указанный на Patreon.')
     bot.register_next_step_handler(message, set_email)
 
 
