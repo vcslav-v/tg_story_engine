@@ -16,9 +16,12 @@ def get_email(msg):
 @logger.catch
 def set_email(msg):
     db = SessionLocal()
-    db_tools.set_email(db, msg.from_user.id, msg.text)
-    user_context = UserContext(msg.from_user.id)
+    logger.debug(msg.from_user.id)
+    logger.debug(msg.text)
     user = db_tools.get_user(db, msg.from_user.id)
+    user.email = msg.text
+    db.commit()
+    user_context = UserContext(msg.from_user.id)
     if db_tools.is_patron(db, user):
         status_msg = 'Ваш статус "Патрон" - Спасибо!'
     else:
@@ -38,6 +41,6 @@ def get_status(msg):
         rows.append('Ваш статус "Патрон" - Спасибо!')
     else:
         rows.append(f'Станьте Патроном и получите полный доступ! - {PATREON_URL}')
-    rows.append(f'У вас{user.num_referals}')
+    rows.append(f'Вы привели {user.num_referals} игроков.')
     bot.send_message(msg.from_user.id, '\n'.join(rows))
     db.close()
