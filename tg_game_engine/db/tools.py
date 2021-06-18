@@ -88,6 +88,10 @@ def get_message(
     user_context: UserContext,
     user_msg: str = None,
 ) -> schemas.Message:
+    if user_context.is_blocked():
+        message = user_context.get_next_msg()
+        if message:
+            return message
     next_msg_id = user_context.get_next_msg_id(user_msg)
     if not next_msg_id:
         next_msg_id = user.message_id
