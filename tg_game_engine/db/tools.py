@@ -42,9 +42,9 @@ def get_user(db: Session, tg_id: int) -> models.TelegramUser:
 
 
 def is_patron(db: Session, user: models.TelegramUser) -> bool:
-    patron = db.query(models.Patron).filter_by(email=user.email).first()
-    if user.email and patron:
-        return patron.email == user.email
+    if user.email:
+        patron = db.query(models.Patron).filter_by(email=user.email).first()
+        return patron.status == 'active_patron' if patron else False
     return False
 
 
