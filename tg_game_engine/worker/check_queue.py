@@ -30,6 +30,8 @@ def run(command: str):
     elif call_to == mem.SEND_NEXT_MSG:
         db = SessionLocal()
         user = db_tools.get_user(db, user_id)
+        logger.debug(user)
+        logger.debug(user_id)
         message = user_context.get_next_msg()
         is_ref_block = message.referal_block and message.referal_block > user.num_referals
         is_patron = db_tools.is_patron(user)
