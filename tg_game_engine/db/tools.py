@@ -122,6 +122,9 @@ def get_message_by_id(db: Session, msg_id: int = None) -> schemas.Message:
 
 def set_email(db: Session, tg_id: int, email: str):
     user = get_user(db, tg_id)
+    logger.debug(tg_id)
+    logger.debug(email)
+    logger.debug(user)
     if user:
         user.email = email
         db.commit()
