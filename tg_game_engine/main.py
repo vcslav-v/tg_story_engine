@@ -7,13 +7,14 @@ from flask import Flask
 
 APP_URL = environ.get('APP_URL') or ''
 BOT_TOKEN = environ.get('BOT_TOKEN') or ''
+PATREON_URL = environ.get('PATREON_URL') or ''
 
 bot = telebot.TeleBot(BOT_TOKEN)
 app = Flask(__name__)
 
 BOT_USERNAME = bot.get_me().username
 
-from .handlers import bot_message, web
+from .handlers import bot_commands, bot_message, web
 
 
 def run_workers():
