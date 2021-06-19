@@ -74,17 +74,13 @@ def send_next_step(
     check_block: bool = True
 ):
     user = tools.get_user(db, user_context.tg_id)
-    logger.debug(f'user {user}')
     if user_context.is_msg_in_queue() or (user_context.is_blocked() and check_block):
-        logger.debug('is_blocked')
         reaction_msg = tools.get_reaction_msg(db, user_context.get_reaction_uid())
         if reaction_msg:
             send(db, reaction_msg, user, user_context)
         return
     message = tools.get_message(db, user, user_context, user_msg)
-    logger.debug(f'message {message.text}')
     if message:
-        logger.debug('message push')
         user_context.push_to_queue(message)
 
 
