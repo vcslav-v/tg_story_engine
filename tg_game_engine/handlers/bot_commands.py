@@ -6,7 +6,7 @@ from tg_game_engine.mem import UserContext
 from tg_game_engine.db import tools as db_tools
 
 
-@bot.message_handler(commands=['impatron'])
+@bot.message_handler(commands=['im_patron'])
 @logger.catch
 def get_email(msg):
     message = bot.reply_to(msg, 'Введите email указанный на Patreon.')
@@ -16,8 +16,6 @@ def get_email(msg):
 @logger.catch
 def set_email(msg):
     db = SessionLocal()
-    logger.debug(msg.from_user.id)
-    logger.debug(msg.text)
     user = db_tools.get_user(db, msg.from_user.id)
     user.email = msg.text
     db.commit()
@@ -43,4 +41,26 @@ def get_status(msg):
         rows.append(f'Станьте Патроном и получите полный доступ! - {PATREON_URL}')
     rows.append(f'Вы привели {user.num_referals} игроков.')
     bot.send_message(msg.from_user.id, '\n'.join(rows))
+    db.close()
+
+
+@bot.message_handler(commands=['reset'])
+@logger.catch
+def reset(msg):
+    db = SessionLocal()
+    db_tools.reset_story(db, msg.from_user.id)
+    user_context = UserContext(msg.from_user.id)
+    user_context.flush()
+    bot_tools.send_next_step(db, user_context)
+    db.close()
+
+
+@bot.message_handler(commands=['reset_chapter'])
+@logger.catch
+def reset_chapter(msg):
+    db = SessionLocal()
+    db_tools.reset_chapter(db, msg.from_user.id)
+    user_context = UserContext(msg.from_user.id)
+    user_context.flush()
+    bot_tools.send_next_step(db, user_context)
     db.close()

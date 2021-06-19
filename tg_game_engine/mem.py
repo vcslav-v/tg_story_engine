@@ -108,3 +108,7 @@ class UserContext:
 
     def is_blocked(self):
         return bool(r.exists(self.block_msg_stage))
+
+    def flush(self):
+        for key in r.keys(f'{self.tg_id}:*'):
+            r.delete(key)
