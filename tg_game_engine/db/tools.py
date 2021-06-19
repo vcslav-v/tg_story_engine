@@ -93,8 +93,10 @@ def get_message(
         if message:
             return message
     next_msg_id = user_context.get_next_msg_id(user_msg)
+    logger.debug(f'next_msg_id {next_msg_id}')
     if not next_msg_id:
         next_msg_id = user.message_id
+    logger.debug(f'next_msg_id {next_msg_id}')
     return get_message_by_id(db, next_msg_id, user.chapter_id)
 
 
@@ -103,6 +105,7 @@ def get_message_by_id(db: Session, msg_id: int = None, chapter_id: int = None) -
         req_url = f'{DB_API_URL}/start_chapter_msg/{chapter_id}'
     else:
         req_url = f'{DB_API_URL}/msg/{msg_id}' if msg_id else DB_API_URL
+    logger.debug(f'req_url {req_url}')
     resp = requests.get(req_url)
     message: schemas.Message = schemas.Message.parse_raw(resp.text)
     if message.wait_reaction_uid:
