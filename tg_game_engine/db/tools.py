@@ -60,7 +60,7 @@ def save_media(db: Session, message: schemas.Message, send_msg):
     if send_msg.content_type == 'photo':
         file_id = sorted(send_msg.photo, key=lambda item: item.width)[-1].file_id
     elif send_msg.content_type == 'voice':
-        logger.debug(file_id)
+        file_id = send_msg.voice.file_id
     elif send_msg.content_type == 'video_note':
         file_id = send_msg.video_note.file_id
 
