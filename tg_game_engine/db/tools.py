@@ -103,6 +103,7 @@ def get_message_by_id(db: Session, msg_id: int = None, chapter_id: int = None) -
         req_url = f'{DB_API_URL}/start_chapter_msg/{chapter_id}'
     else:
         req_url = f'{DB_API_URL}/msg/{msg_id}' if msg_id else DB_API_URL
+    logger.debug(req_url)
     resp = requests.get(req_url)
     message: schemas.Message = schemas.Message.parse_raw(resp.text)
     if message.wait_reaction_uid:
