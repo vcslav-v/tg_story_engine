@@ -46,7 +46,7 @@ def send(
             message.text.format_map(user_context.format),
             reply_markup=buttons
         )
-    elif message.content_type in ['photo', 'audio', 'video_note']:
+    elif message.content_type in ['photo', 'audio', 'voice', 'video_note']:
         media = tools.get_media(db, message)
         try:
             send_msg = send_media_msg(
