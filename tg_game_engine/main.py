@@ -8,6 +8,7 @@ from flask import Flask
 APP_URL = environ.get('APP_URL') or ''
 BOT_TOKEN = environ.get('BOT_TOKEN') or ''
 PATREON_URL = environ.get('PATREON_URL') or ''
+ADMIN_ID = environ.get('ADMIN_ID') or ''
 
 bot = telebot.TeleBot(BOT_TOKEN)
 app = Flask(__name__)
