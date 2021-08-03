@@ -24,6 +24,8 @@ def make_buttons(message: schemas.Message) -> types.ReplyKeyboardMarkup:
 def send_media_msg(tg_ig: int, content_type: str, media, caption: Optional[str], buttons):
     if content_type == 'photo':
         return bot.send_photo(tg_ig, media, caption, reply_markup=buttons)
+    elif content_type == 'voice':
+        return bot.send_voice(tg_ig, media, caption, reply_markup=buttons)
     elif content_type == 'audio':
         return bot.send_audio(tg_ig, media, caption, reply_markup=buttons)
     elif content_type == 'video_note':
