@@ -8,7 +8,7 @@ from flask import Flask
 APP_URL = environ.get('APP_URL') or ''
 BOT_TOKEN = environ.get('BOT_TOKEN') or ''
 PATREON_URL = environ.get('PATREON_URL') or ''
-ADMIN_ID = environ.get('ADMIN_ID') or ''
+ADMIN_ID = int(environ.get('ADMIN_ID')) if str(environ.get('ADMIN_ID')).isdecimal() or 0
 
 bot = telebot.TeleBot(BOT_TOKEN)
 app = Flask(__name__)
