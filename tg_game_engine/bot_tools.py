@@ -81,6 +81,7 @@ def send_next_step(
         return
     message = tools.get_message(db, user, user_context, user_msg)
     if message:
+        logger.debug(message)
         user_context.push_to_queue(message)
 
 
