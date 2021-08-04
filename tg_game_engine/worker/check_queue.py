@@ -11,15 +11,15 @@ from tg_game_engine.db.main import SessionLocal
 def start():
     while True:
         now_timestamp = int(datetime.timestamp(datetime.utcnow()))
-        for command, timestamp in mem.queue():
-            if now_timestamp >= timestamp:
-                mem.rem_from_queue(command)
-                try:
+        try:
+            for command, timestamp in mem.queue():
+                if now_timestamp >= timestamp:
+                    mem.rem_from_queue(command)
                     run(command)
-                except:
-                    pass
-            else:
-                break
+                else:
+                    break
+        except Exception as e:
+            logger.debug(e)
 
 
 @logger.catch
