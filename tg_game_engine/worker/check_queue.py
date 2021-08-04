@@ -14,13 +14,9 @@ def start():
         for command, timestamp in mem.queue():
             if now_timestamp >= timestamp:
                 mem.rem_from_queue(command)
-                try:
-                    run(command)
-                except:
-                    pass
+                run(command)
             else:
                 break
-        sleep(1)
 
 
 @logger.catch
