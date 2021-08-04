@@ -9,6 +9,7 @@ from tg_game_engine.main import BOT_TOKEN, app, bot
 
 
 @app.route('/' + BOT_TOKEN, methods=['POST'])
+@logger.catch
 def getMessage():
     bot.process_new_updates([
             telebot.types.Update.de_json(
