@@ -60,7 +60,6 @@ def get_media(db: Session, message: schemas.Message, try_get_local=True):
 
 
 def save_media(db: Session, message: schemas.Message, send_msg):
-    logger.debug(send_msg)
     if send_msg.content_type == 'photo':
         file_id = sorted(send_msg.photo, key=lambda item: item.width)[-1].file_id
     elif send_msg.content_type == 'voice':
@@ -108,7 +107,6 @@ def get_message_by_id(db: Session, msg_id: int = None, chapter_id: int = None) -
         req_url = f'{DB_API_URL}/start_chapter_msg/{chapter_id}'
     else:
         req_url = f'{DB_API_URL}/msg/{msg_id}' if msg_id else DB_API_URL
-    logger.debug(req_url)
     resp = requests.get(req_url)
     message: schemas.Message = schemas.Message.parse_raw(resp.text)
     if message.wait_reaction_uid:
