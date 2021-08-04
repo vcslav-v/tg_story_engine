@@ -19,6 +19,7 @@ def getMessage():
         ])
         return 'ok', 200
     except:
+        logger.debug(request.stream.read().decode('utf-8'))
         return 'incorrect', 400
 
 
