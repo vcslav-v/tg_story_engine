@@ -10,7 +10,7 @@ class Button(BaseModel):
 
 class Message(BaseModel):
     id: Optional[int]
-    content_type: str
+    content_type: str = 'text'
     chapter_id: Optional[int]
     speed_type: int
     timeout: int
