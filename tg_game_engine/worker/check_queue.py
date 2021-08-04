@@ -50,6 +50,7 @@ def run(command: str):
             bot_tools.send(db, message, user, user_context)
         except:
             return
+            db.close()
         if message.buttons:
             user_context.set_wait_answers(message)
         elif message.link:
