@@ -14,12 +14,16 @@ def start():
         for command, timestamp in mem.queue():
             if now_timestamp >= timestamp:
                 mem.rem_from_queue(command)
-                run(command)
+                try:
+                    run(command)
+                except:
+                    pass
             else:
                 break
         sleep(1)
 
 
+@logger.catch
 def run(command: str):
     raw_user_id, call_to, *tail = command.split(':')
     user_id = int(raw_user_id)
