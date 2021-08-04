@@ -29,7 +29,10 @@ def run(command: str):
     user_id = int(raw_user_id)
     user_context = mem.UserContext(user_id)
     if call_to == mem.SEND_MSG_TYPING:
-        bot_tools.send_status(user_id, user_context.get_next_msg_type())
+        try:
+            bot_tools.send_status(user_id, user_context.get_next_msg_type())
+        except:
+            return
 
     elif call_to == mem.SEND_NEXT_MSG:
         db = SessionLocal()
@@ -43,7 +46,10 @@ def run(command: str):
             return
         if user_context.is_blocked():
             user_context.deblock_msg()
-        bot_tools.send(db, message, user, user_context)
+        try:
+            bot_tools.send(db, message, user, user_context)
+        except:
+            return
         if message.buttons:
             user_context.set_wait_answers(message)
         elif message.link:
