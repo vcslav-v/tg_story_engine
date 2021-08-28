@@ -13,8 +13,9 @@ def extract_link_data(text):
         return data
     raw_data = text.split()[1].split('ZZ')
     for item in raw_data:
-        key, value = item.split('-')
-        data[key] = value
+        key, *value = item.split('-')
+        if value:
+            data[key] = value[0]
     return data
 
 
