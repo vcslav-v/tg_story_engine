@@ -20,7 +20,7 @@ class TelegramUser(Base):
     email = Column(Text)
 
 
-class Messages(Base):
+class Message(Base):
     """Story."""
 
     __tablename__ = 'messages'

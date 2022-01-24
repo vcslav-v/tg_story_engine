@@ -155,7 +155,7 @@ def add_story(db: Session, story: str):
     _story = json.loads(story)
     start_link = _story['data']['initial']
     for link, message in _story['data']['stitches'].items():
-        new_msg = models.Messages(link=link)
+        new_msg = models.Message(link=link)
         new_msg.message, *options = message
         db.add(new_msg)
     db.commit()
