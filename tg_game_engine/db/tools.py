@@ -150,7 +150,7 @@ def reset_chapter(db: Session, tg_id: int):
 
 
 def add_story(db: Session, story: str):
-    db.query(models.Messages).delete()
+    db.query(models.Message).delete()
     db.commit()
     _story = json.loads(story)
     start_link = _story['data']['initial']
