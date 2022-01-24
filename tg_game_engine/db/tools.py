@@ -162,7 +162,7 @@ def add_story(db: Session, story: str):
     for link, message in _story['data']['stitches'].items():
         new_msg = models.Message(link=link)
         text, *options = message['content']
-        if re.match(r'^\[.*\]$', text.message.strip()):
+        if re.match(r'^\[.*\]$', text.strip()):
             msg_info = text.strip('[] ').split(',')
             msg_info = list(map(lambda x: x.strip().split('='), msg_info))
             for field, value in msg_info:
