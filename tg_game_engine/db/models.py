@@ -64,7 +64,7 @@ class Button(Base):
     )
     parrent_message = relationship(
         'Message',
-        back_populates='own_buttons',
+        back_populates='buttons',
         foreign_keys=[parrent_message_link],
     )
     number = Column(Integer)
@@ -72,7 +72,6 @@ class Button(Base):
     next_message_link = Column(Text, ForeignKey('messages.link'))
     next_message = relationship(
         'Message',
-        back_populates='from_button',
         foreign_keys=[next_message_link],
     )
 
