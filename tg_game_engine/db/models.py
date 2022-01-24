@@ -35,7 +35,7 @@ class Messages(Base):
         uselist=False,
         back_populates='parrent_message',
         cascade='delete-orphan,delete',
-        foreign_keys='[Media.parrent_message_id]',
+        foreign_keys='[Media.parrent_message_link]',
     )
     next_msg = Column(Text, ForeignKey('messages.link'))
     buttons = relationship(
