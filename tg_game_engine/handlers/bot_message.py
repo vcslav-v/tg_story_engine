@@ -57,7 +57,7 @@ def text_reply(msg):
 def get_story(msg):
     if msg.from_user.id == ADMIN_ID:
         media_data = bot.get_file(msg.document.file_id)
-        with io.StringIO(bot.download_file(media_data.file_path)) as zip_file:
+        with io.BytesIO(bot.download_file(media_data.file_path)) as zip_file:
             with ZipFile(zip_file) as zip_value:
                 with zip_value.open('story.json') as story:
                     logger.debug(story.readline(10))
