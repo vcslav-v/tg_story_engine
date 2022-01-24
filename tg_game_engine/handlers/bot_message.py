@@ -53,4 +53,6 @@ def text_reply(msg):
 @logger.catch
 def get_story(msg):
     if msg.from_user.id == ADMIN_ID:
-        logger.debug(msg)
+        media_data = bot.get_file(msg.document.file_id)
+        f = bot.download_file(media_data.file_path)
+        logger.debug(f[:10])
