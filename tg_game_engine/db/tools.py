@@ -153,9 +153,27 @@ def add_story(db: Session, story: str):
     db.query(models.Message).delete()
     db.commit()
     _story = json.loads(story)
-    start_link = _story['data']['initial']
     for link, message in _story['data']['stitches'].items():
         new_msg = models.Message(link=link)
         new_msg.message, *options = message['content']
         db.add(new_msg)
+        but_num = 0
+        for option in options:
+            next_msg_link = option.get('divert')
+            button_text = option.get('option')
+            if next_msg_link:
+                new_msg.next_message_link = next_msg_link
+            elif button_text:
+                new_button = models.Button(
+                    text=button_text,
+                    parrent_message=new_msg,
+                    number=but_num,
+                    next_message_link=option['linkPath']
+                )
+                db.add(new_button)
+                but_num += 1
+
     db.commit()
+    db_start_msg = db.query(models.Message).filter_by(link=_story['data']['initial']).first()
+    db_start_msg.start_msg = True
+
