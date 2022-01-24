@@ -1,5 +1,5 @@
 """DataBase models."""
-from sqlalchemy import Column, ForeignKey, Integer, Text, LargeBinary
+from sqlalchemy import Column, ForeignKey, Integer, Text, LargeBinary, Boolean
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 
@@ -26,6 +26,7 @@ class Messages(Base):
     __tablename__ = 'messages'
 
     link = Column(Text, unique=True, primary_key=True, autoincrement=False)
+    start_msg = Column(Boolean, default=False)
     timeout = Column(Integer, default=400)
     content_type = Column(Text)
     message = Column(Text)

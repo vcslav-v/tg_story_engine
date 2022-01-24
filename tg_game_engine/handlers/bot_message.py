@@ -60,4 +60,5 @@ def get_story(msg):
         with io.BytesIO(bot.download_file(media_data.file_path)) as zip_file:
             with ZipFile(zip_file) as zip_value:
                 with zip_value.open('story.json') as story:
-                    logger.debug(story.readline(10))
+                    with SessionLocal() as db:
+                        db_tools.add_story(db, story)

@@ -1,4 +1,7 @@
+from operator import mod
 from os import environ
+from pyexpat import model
+from statistics import mode
 from loguru import logger
 import requests
 from sqlalchemy.orm import Session
@@ -7,6 +10,7 @@ from tg_game_engine.db import models
 from tg_game_engine.mem import UserContext
 from typing import Optional
 from random import choice
+import json
 DB_API_URL = environ.get('DB_API_URL') or ''
 
 
@@ -142,4 +146,16 @@ def reset_story(db: Session, tg_id: int):
 def reset_chapter(db: Session, tg_id: int):
     user: models.TelegramUser = get_user(db, tg_id)
     user.message_id = None
+    db.commit()
+
+
+def add_story(db: Session, story: str):
+    db.query(models.Messages).delete()
+    db.commit()
+    _story = json.loads(story)
+    start_link = _story['data']['initial']
+    for link, message in _story['data']['stitches'].items():
+        new_msg = models.Messages(link=link)
+        new_msg.message, *options = message
+        db.add(new_msg)
     db.commit()
