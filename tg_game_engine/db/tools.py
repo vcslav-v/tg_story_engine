@@ -11,6 +11,7 @@ from tg_game_engine.mem import UserContext
 from typing import Optional
 from random import choice
 import json
+import re
 DB_API_URL = environ.get('DB_API_URL') or ''
 
 
@@ -155,7 +156,20 @@ def add_story(db: Session, story: str):
     _story = json.loads(story)
     for link, message in _story['data']['stitches'].items():
         new_msg = models.Message(link=link)
-        new_msg.message, *options = message['content']
+        text, *options = message['content']
+        if re.match(r'^\[.*\]$', text.message.strip()):
+            msg_info = text.strip('[] ').split(',')
+            msg_info = list(map(lambda x: x.strip().split('='), msg_info))
+            for field, value in msg_info:
+                if field == 'photo':
+                    new_msg.content_type = field
+                elif field == 'voice':
+                    new_msg.content_type = field
+                elif field == 'cap':
+                    new_msg.message = value
+        else:
+            new_msg.message = text
+            new_msg.content_type = 'text'
         db.add(new_msg)
         but_num = 0
         for option in options:
