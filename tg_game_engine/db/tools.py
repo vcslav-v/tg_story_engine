@@ -151,9 +151,10 @@ def reset_chapter(db: Session, tg_id: int):
 
 
 def add_story(db: Session, story: str):
-    db.query(models.Message).delete()
     db.query(models.Button).delete()
     db.query(models.Media).delete()
+    db.commit()
+    db.query(models.Message).delete()
     db.query(models.WaitReaction).delete()
     db.query(models.Reaction).delete()
     db.commit()
