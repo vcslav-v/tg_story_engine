@@ -82,5 +82,8 @@ package-install:
 	python3 -m pip -q install --user dist/*.whl
 coverage:
 	poetry run pytest --cov=$(APP_NAME) --cov-report xml tests/
+test_db:
+	docker run --name test-postgres -e POSTGRES_PASSWORD=mysecretpassword -e POSTGRES_DB=postgres -d -p 5432:5432 postgres
+
 req:
 	poetry export>requirements.txt
