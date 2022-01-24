@@ -84,7 +84,7 @@ class Media(Base):
     id = Column(Integer, primary_key=True)
 
     file_data = Column(LargeBinary, nullable=False)
-    content_type = Column(Text)
+    tg_id = Column(Text)
     parrent_message_link = Column(
         Text,
         ForeignKey('messages.link'),
