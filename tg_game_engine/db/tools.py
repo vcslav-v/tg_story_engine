@@ -170,7 +170,6 @@ def add_story(db: Session, zip_value):
                 if field == 'photo':
                     new_msg.content_type = field
                     with zip_value.open(f'media/{value}', 'r') as media_file:
-                        logger.debug(type(media_file.read()))
                         new_media = models.Media(
                             file_data=media_file.read(),
                             parrent_message=new_msg,
@@ -179,7 +178,6 @@ def add_story(db: Session, zip_value):
                 elif field == 'voice':
                     new_msg.content_type = field
                     with zip_value.open(f'media/{value}', 'r') as media_file:
-                        logger.debug(type(media_file.read()))
                         new_media = models.Media(
                             file_data=media_file.read(),
                             parrent_message=new_msg,
