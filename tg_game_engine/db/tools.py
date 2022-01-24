@@ -150,7 +150,9 @@ def reset_chapter(db: Session, tg_id: int):
     db.commit()
 
 
-def add_story(db: Session, story: str):
+def add_story(db: Session, zip_value):
+    with zip_value.open('story.json') as story:
+        _story = json.loads(story.read())
     db.query(models.Button).delete()
     db.query(models.Media).delete()
     db.commit()
@@ -158,7 +160,6 @@ def add_story(db: Session, story: str):
     db.query(models.WaitReaction).delete()
     db.query(models.Reaction).delete()
     db.commit()
-    _story = json.loads(story)
     for link, message in _story['data']['stitches'].items():
         new_msg = models.Message(link=link)
         text, *options = message['content']
@@ -168,8 +169,12 @@ def add_story(db: Session, story: str):
             for field, value in msg_info:
                 if field == 'photo':
                     new_msg.content_type = field
+                    with zip_value.open(f'media/{value}') as media_file:
+                        logger.debug(media_file.read()[:10])
                 elif field == 'voice':
                     new_msg.content_type = field
+                    with zip_value.open(f'media/{value}') as media_file:
+                        logger.debug(media_file.read()[:10])
                 elif field == 'cap':
                     new_msg.message = value
         else:
@@ -181,7 +186,7 @@ def add_story(db: Session, story: str):
             next_msg_link = option.get('divert')
             button_text = option.get('option')
             if next_msg_link:
-                new_msg.next_message_link = next_msg_link
+                new_msg.next_msg = next_msg_link
             elif button_text:
                 new_button = models.Button(
                     text=button_text,
