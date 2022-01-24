@@ -61,4 +61,4 @@ def get_story(msg):
             with ZipFile(zip_file) as zip_value:
                 with zip_value.open('story.json') as story:
                     with SessionLocal() as db:
-                        db_tools.add_story(db, story)
+                        db_tools.add_story(db, story.read())
