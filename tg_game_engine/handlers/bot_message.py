@@ -1,3 +1,4 @@
+from zipfile import ZipFile
 from loguru import logger
 from tg_game_engine import bot_tools
 from tg_game_engine.db.main import SessionLocal
@@ -5,6 +6,7 @@ from tg_game_engine.main import bot, ADMIN_ID
 from tg_game_engine.mem import UserContext
 from tg_game_engine.db.tools import add_referal
 from tg_game_engine.db import tools as db_tools
+import io
 
 
 def extract_link_data(text):
@@ -47,6 +49,7 @@ def text_reply(msg):
     bot_tools.send_next_step(db, user_context, msg.text)
     db.close()
 
+
 @bot.message_handler(
     content_types='document',
 )
@@ -54,5 +57,7 @@ def text_reply(msg):
 def get_story(msg):
     if msg.from_user.id == ADMIN_ID:
         media_data = bot.get_file(msg.document.file_id)
-        f = bot.download_file(media_data.file_path)
-        logger.debug(f[:10])
+        with io.StringIO(bot.download_file(media_data.file_path)) as zip_file:
+            with ZipFile(zip_file) as zip_value:
+                with zip_value.open('story.json') as story:
+                    logger.debug(story.readline(10))
