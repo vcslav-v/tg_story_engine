@@ -1,5 +1,5 @@
 from operator import mod
-from os import environ
+from os import environ, path
 from pyexpat import model
 from statistics import mode
 from loguru import logger
@@ -169,7 +169,7 @@ def add_story(db: Session, zip_value):
             for field, value in msg_info:
                 if field == 'photo':
                     new_msg.content_type = field
-                    with zip_value.open(f'media/{value}', 'r') as media_file:
+                    with zip_value.open(path.join('media', value), 'r') as media_file:
                         new_media = models.Media(
                             file_data=media_file.read(),
                             parrent_message=new_msg,
@@ -177,7 +177,7 @@ def add_story(db: Session, zip_value):
                         db.add(new_media)
                 elif field == 'voice':
                     new_msg.content_type = field
-                    with zip_value.open(f'media/{value}', 'r') as media_file:
+                    with zip_value.open(path.join('media', value), 'r') as media_file:
                         new_media = models.Media(
                             file_data=media_file.read(),
                             parrent_message=new_msg,
