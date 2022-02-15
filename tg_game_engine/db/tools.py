@@ -208,4 +208,4 @@ def add_story(db: Session, zip_value):
     db.commit()
     db_start_msg = db.query(models.Message).filter_by(link=_story['data']['initial']).first()
     db_start_msg.start_msg = True
-
+    db.commit()
