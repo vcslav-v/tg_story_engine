@@ -14,7 +14,6 @@ class TelegramUser(Base):
     id = Column(Integer, primary_key=True)
 
     telegram_id = Column(Integer, unique=True)
-    chapter_id = Column(Integer)
     message_id = Column(Integer)
     num_referals = Column(Integer, default=0)
     email = Column(Text)
@@ -28,6 +27,7 @@ class Message(Base):
     link = Column(Text, unique=True, primary_key=True, autoincrement=False)
     start_msg = Column(Boolean, default=False)
     timeout = Column(Integer, default=400)
+    speed_type = Column(Integer, default=1200)
     content_type = Column(Text)
     message = Column(Text)
     media = relationship(

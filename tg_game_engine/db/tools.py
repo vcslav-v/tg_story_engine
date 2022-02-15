@@ -104,36 +104,28 @@ def get_message(
     next_msg_id = user_context.get_next_msg_id(user_msg)
     if not next_msg_id:
         next_msg_id = user.message_id
-    return get_message_by_id(db, next_msg_id, user.chapter_id)
+    return get_message_by_id(db, next_msg_id)
 
 
-def get_message_by_id(db: Session, msg_id: int = None, chapter_id: int = None) -> schemas.Message:
-    if chapter_id and not msg_id:
-        req_url = f'{DB_API_URL}/start_chapter_msg/{chapter_id}'
+def get_message_by_id(db: Session, msg_link: str = None) -> schemas.Message:
+    if msg_link:
+        db_message = db.query(models.Message).filter_by(link=msg_link).first()
     else:
-        req_url = f'{DB_API_URL}/msg/{msg_id}' if msg_id else DB_API_URL
-    resp = requests.get(req_url)
-    message: schemas.Message = schemas.Message.parse_raw(resp.text)
-    if message.wait_reaction_uid:
-        local_wait_reactions = db.query(
-            models.WaitReaction
-        ).filter_by(uid=message.wait_reaction_uid).first()
-        if not local_wait_reactions:
-            raw_wait_reactions = requests.get(
-                f'{DB_API_URL}/wait_reactions/{message.wait_reaction_uid}'
-            ).text
-            wait_reactions: schemas.WaitReactions = schemas.WaitReactions.parse_raw(raw_wait_reactions)
-            wait_reactions_model = models.WaitReaction(
-                name=wait_reactions.name,
-                uid=wait_reactions.uid,
-            )
-            db.add(wait_reactions_model)
-            for react in wait_reactions.messages:
-                db.add(models.Reaction(
-                    text=react,
-                    wait_reaction=wait_reactions_model,
-                ))
-            db.commit()
+        db_message = db.query(models.Message).filter_by(start_msg=True).first()
+    message: schemas.Message = schemas.Message(
+        link=db_message.link,
+        content_type=db_message.content_type,
+        speed_type=db_message.speed_type,
+        timeout=db_message.timeout,
+        text=db_message.message,
+        media_id=db_message.media.id,
+        next_msg=db_message.next_msg,
+        buttons=[schemas.Button(
+            text=button.text,
+            number=button.number,
+            next_message_link=button.next_message_link
+        ) for button in db_message.buttons]
+    )
     return message
 
 

@@ -5,18 +5,17 @@ from typing import Optional, List
 class Button(BaseModel):
     text: str
     number: int
-    next_message_id: int
+    next_message_link: str
 
 
 class Message(BaseModel):
-    id: Optional[int]
+    link: str
     content_type: str = 'text'
-    chapter_id: Optional[int]
     speed_type: int
     timeout: int
     text: Optional[str]
-    media_uid: Optional[str]
-    link: Optional[int]
+    media_id: Optional[int]
+    next_msg: Optional[str]
     buttons: Optional[List[Button]]
     wait_reaction_uid: Optional[str]
     referal_block: Optional[int]
